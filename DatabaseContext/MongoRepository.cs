@@ -2,20 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using DatabaseConfig;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace DatabaseContext
 {
-    public class MongoRepository<TEntity> : IMongoRepository<TEntity, string> where TEntity : class, IIdentifiable<string>
+    public class MongoRepository<TEntity> : IRepository<TEntity, string> where TEntity : class, IIdentifiable<string>
     {
-        private readonly MongoContext _mongoContext;
-        //private readonly IMongoContext _mongoContext;
+        //private readonly MongoContext _mongoContext;
+        private readonly IMongoContext _mongoContext;
+        private readonly IOptions<MongoConfig> mongoConfig;
 
-        public MongoRepository()
+        public MongoRepository(IOptions<MongoConfig> _mongoConfig, IMongoContext mongoContext)
         //public MongoRepository(IMongoContext context)
         {
-            _mongoContext = new MongoContext("mongorepo", "person");
-            //_mongoContext = context;
+            mongoConfig = _mongoConfig;
+            _mongoContext = new MongoContext(mongoConfig);
+            _mongoContext = mongoContext;
         }
         public void Delete(string key)
         {
@@ -30,7 +34,7 @@ namespace DatabaseContext
 
         public TEntity Get(string key)
         {
-            var filter = Builders<TEntity>.Filter.Eq("ReportId", key);
+            var filter = Builders<TEntity>.Filter.Eq("_id", key);
             var results = _mongoContext.Collection<TEntity>().Find(filter).Limit(1).ToList();
             return results[0];
         }

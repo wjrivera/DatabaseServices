@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DatabaseConfig\DatabaseConfig.csproj" />
     <ProjectReference Include="..\PersonServices\PersonServices.csproj" />
   </ItemGroup>
 

@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace DatabaseContext
 {
-    public interface IMongoRepository<TEntity, TKey> where TEntity : class, IIdentifiable<string>
+    public interface IRepository<TEntity, TKey> where TEntity : class, IIdentifiable<string>
     {
         void Delete(string key);
         IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> match);

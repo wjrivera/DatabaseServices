@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DatabaseConfig;
 using DatabaseContext;
 using DatabaseModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using PersonServices;
 
 namespace DatabaseServices.Controllers
@@ -14,18 +16,22 @@ namespace DatabaseServices.Controllers
     {
         private readonly IPersonService _personService;
 
-        //private readonly IMongoRepository<PersonModel, string> _repository;
-        //private readonly IMongoContext _context;
+        private readonly IRepository<PersonModel, string> _repository;
+        private readonly IOptions<MongoConfig> _options;
+        private IMongoContext _context;
 
-
-        public PersonController(IPersonService personService, IMongoRepository<PersonModel, string> repository)
-        //public PersonController(IPersonService personService)
+        //public PersonController(IPersonService personService, IRepository<PersonModel, string> repository, IOptions<MongoConfig> options, IMongoContext context)
+        public PersonController(IPersonService personService, IRepository<PersonModel, string> repository, IOptions<MongoConfig> mongoConfig, IMongoContext mongoContext)
         {
-            //_repository = repository;
+            _context = mongoContext;
+            _repository = repository;
+            _options = mongoConfig;
+            var x = _options.Value.collection;
             //_context = new MongoContext("mongorepo", "person");
             //_repository = new MongoRepository<PersonModel>();
 
             //_personService = new PersonService(new MongoRepository<PersonModel>(new MongoContext("mongorepo", "person")));
+            
             
             //_personService = new PersonService(repository);
 
@@ -40,10 +46,10 @@ namespace DatabaseServices.Controllers
 
         // GET api/values/5
         [HttpGet("get/{id}")]
-        public bool Get(int id)
+        public IActionResult Get(string id)
         {
-            var listPersons = _personService.GetAll();
-            return true;
+            var listPersons = _personService.GetPerson(id);
+            return Ok(listPersons);
         }
 
         // POST api/values
